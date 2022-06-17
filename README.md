@@ -10,3 +10,4 @@ Application using API from Github
 | OkHttp | [3.12.10] |
 | Glide | 4.11.0  |
 | Koin | 3.2.0 |
+| Gson | 2.9.0 |
