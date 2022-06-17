@@ -1,5 +1,9 @@
 package br.com.android.gitrepos.data.remote.dto
 
+import android.os.Parcel
+import android.os.Parcelable
+import java.io.Serializable
+
 /**
  * Created by Carlos Souza on 15,junho,2022
  */
@@ -14,7 +18,7 @@ data class Item(
     val name: String,
     val stargazers_count: Int,
     val owner: Owner
-)
+): Serializable
 
 data class Owner(
     val id: Int,

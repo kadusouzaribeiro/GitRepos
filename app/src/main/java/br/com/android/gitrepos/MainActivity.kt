@@ -1,6 +1,8 @@
 package br.com.android.gitrepos
 
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -12,12 +14,11 @@ import br.com.android.gitrepos.data.ResponseStatus
 import br.com.android.gitrepos.data.remote.dto.GitData
 import br.com.android.gitrepos.data.remote.dto.Item
 import br.com.android.gitrepos.databinding.ActivityMainBinding
+import br.com.android.gitrepos.utils.Permissions
 import br.com.android.gitrepos.viewmodel.GitViewModel
 import com.google.gson.Gson
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
+import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,33 +27,49 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var reposAdapter: GitRepoAdapter
 
+    private var permissionDenied = false
     private val listRepos: MutableList<Item> = mutableListOf()
     private var loading = false
     private var initialSize = 0
     private var page = 1
+
+    private val RECYCLER_STATE = "recycler_state"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(view)
-
-        val gson = Gson()
-
-        val cachedRepos = RepoCache.read(applicationContext)
-
-        val gd = gson.fromJson(cachedRepos, GitData::class.java)
-
+        if (savedInstanceState != null) {
+            binding.rvRepoInfo.layoutManager?.onRestoreInstanceState(savedInstanceState.getParcelable(RECYCLER_STATE))
+        }
         setObservable()
+        getData()
+//        if (Permissions.hasInternetPermission(this)) {
+//            getData()
+//        } else {
+//            Permissions.requestInternetPermission(this)
+//        }
+    }
 
-        viewModel.getRepos(page)
+    private fun getData() {
+        val gson = Gson()
+        val cachedRepos = RepoCache.read(applicationContext)
+        val cachedPage = RepoCache.read(applicationContext, true)
+        if (cachedRepos != "" && cachedPage != "") {
+            page = cachedPage.toInt()
+            val gd = gson.fromJson(cachedRepos, GitData::class.java)
+            listRepos.addAll(gd.items)
+            setReposList(listRepos)
+        } else {
+            viewModel.getRepos(page)
+        }
     }
 
     private fun setObservable() {
         viewModel.state.observe(this) {
             when (it.status) {
                 ResponseStatus.SUCCESS -> {
-                    Log.d("GitRepos", "listrepos: ${listRepos.size}")
                     val repos = it.data
                     repos?.let { g ->
                         if (listRepos.size == 0) {
@@ -64,12 +81,11 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         val gson = Gson()
-
                         val gd = GitData(
                             items = listRepos
                         )
-
                         RepoCache.save(applicationContext, gson.toJson(gd))
+                        RepoCache.save(applicationContext, page.toString(), true)
                         binding.pbGitrepos.visibility = View.GONE
                         loading = false
                     }
@@ -117,6 +133,7 @@ class MainActivity : AppCompatActivity() {
                     if (!loading && (firstVisibleItem + (visibleItemCount*2)) >= totalItemCount - 1) {
                         initialSize = listRepos.size
                         page += 1
+                        loading = true
                         viewModel.getRepos(page)
                     }
 
@@ -136,7 +153,23 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    //decidir maneira de fazer o cache (Arquivo ou Room)
-    //fazer o cache
-    //acertar a orientação do aparelho, savedinstancestate
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == Permissions.INTERNET_PERMISSION_CODE &&
+                grantResults[0] == PackageManager.PERMISSION_DENIED && !permissionDenied) {
+            permissionDenied = true
+            Permissions.requestInternetPermission(this)
+        } else {
+            getData()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(RECYCLER_STATE, binding.rvRepoInfo.layoutManager?.onSaveInstanceState())
+
+    }
 }
