@@ -1,4 +1,4 @@
-package br.com.android.gitrepos
+package br.com.android.gitrepos.utils
 
 import android.content.Context
 import android.util.Log
@@ -11,15 +11,10 @@ import java.io.*
 object RepoCache {
 
     private const val CACHEFILE = "repo_cache"
-    private const val LASTPAGE = "page_cache"
 
-    fun save(context: Context, json: String, page: Boolean = false) {
+    fun save(context: Context, json: String) {
         try {
-            var fileName = CACHEFILE
-            if (page) {
-                fileName = LASTPAGE
-            }
-            val file = File(context.cacheDir, fileName)
+            val file = File(context.cacheDir, CACHEFILE)
             val fileOutputStream = FileOutputStream(file)
             val outputStreamWriter = OutputStreamWriter(fileOutputStream)
             val bufferedWriter = BufferedWriter(outputStreamWriter)
@@ -33,14 +28,10 @@ object RepoCache {
         }
     }
 
-    fun read(context: Context, page: Boolean = false): String {
+    fun read(context: Context): String {
         val retBuf = StringBuffer()
         try {
-            var fileName = CACHEFILE
-            if (page) {
-                fileName = LASTPAGE
-            }
-            val file = File(context.cacheDir, fileName)
+            val file = File(context.cacheDir, CACHEFILE)
             val fileInputStream = FileInputStream(file)
 
             val inputStreamReader = InputStreamReader(fileInputStream)

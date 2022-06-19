@@ -2,8 +2,6 @@ package br.com.android.gitrepos
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Parcelable
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -11,14 +9,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.android.gitrepos.adapter.GitRepoAdapter
 import br.com.android.gitrepos.data.ResponseStatus
-import br.com.android.gitrepos.data.remote.dto.GitData
 import br.com.android.gitrepos.data.remote.dto.Item
 import br.com.android.gitrepos.databinding.ActivityMainBinding
+import br.com.android.gitrepos.utils.CacheData
 import br.com.android.gitrepos.utils.Permissions
+import br.com.android.gitrepos.utils.RepoCache
 import br.com.android.gitrepos.viewmodel.GitViewModel
 import com.google.gson.Gson
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.util.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,21 +43,15 @@ class MainActivity : AppCompatActivity() {
         }
         setObservable()
         getData()
-//        if (Permissions.hasInternetPermission(this)) {
-//            getData()
-//        } else {
-//            Permissions.requestInternetPermission(this)
-//        }
     }
 
     private fun getData() {
         val gson = Gson()
         val cachedRepos = RepoCache.read(applicationContext)
-        val cachedPage = RepoCache.read(applicationContext, true)
-        if (cachedRepos != "" && cachedPage != "") {
-            page = cachedPage.toInt()
-            val gd = gson.fromJson(cachedRepos, GitData::class.java)
-            listRepos.addAll(gd.items)
+        if (cachedRepos != "") {
+            val cd = gson.fromJson(cachedRepos, CacheData::class.java)
+            page = cd.page
+            listRepos.addAll(cd.items)
             setReposList(listRepos)
         } else {
             viewModel.getRepos(page)
@@ -81,11 +73,11 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         val gson = Gson()
-                        val gd = GitData(
+                        val cacheData = CacheData(
+                            page = page,
                             items = listRepos
                         )
-                        RepoCache.save(applicationContext, gson.toJson(gd))
-                        RepoCache.save(applicationContext, page.toString(), true)
+                        RepoCache.save(applicationContext, gson.toJson(cacheData))
                         binding.pbGitrepos.visibility = View.GONE
                         loading = false
                     }
