@@ -56,7 +56,7 @@ class GitViewModelTest {
     @ExperimentalCoroutinesApi
     @After
     fun tearDown() {
-        Dispatchers.resetMain() // reset main dispatcher to the original Main dispatcher
+        Dispatchers.resetMain()
         mainThreadSurrogate.close()
     }
 

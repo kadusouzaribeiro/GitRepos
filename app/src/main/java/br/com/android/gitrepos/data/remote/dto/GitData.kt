@@ -1,7 +1,5 @@
 package br.com.android.gitrepos.data.remote.dto
 
-import android.os.Parcel
-import android.os.Parcelable
 import java.io.Serializable
 
 /**

@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import java.io.*
 
-
 /**
  * Created by Carlos Souza on 16,junho,2022
  */

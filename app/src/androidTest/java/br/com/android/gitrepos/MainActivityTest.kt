@@ -34,13 +34,16 @@ class MainActivityTest {
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
         onView(withId(R.id.rv_repo_info))
-            .check(matches(isDisplayed())) // method 1
+            .check(matches(isDisplayed()))
 
     }
 
     @Test
     fun test_recycler_view_move() {
-         onView(withId(R.id.rv_repo_info))
-             .perform(scrollToPosition<GitRepoAdapter.ReposViewHolder>(25))
+        onView(withId(R.id.rv_repo_info))
+             .perform(scrollToPosition<GitRepoAdapter.ReposViewHolder>(10))
+        Thread.sleep(5000)
+        onView(withId(R.id.rv_repo_info))
+            .perform(scrollToPosition<GitRepoAdapter.ReposViewHolder>(20))
     }
 }
