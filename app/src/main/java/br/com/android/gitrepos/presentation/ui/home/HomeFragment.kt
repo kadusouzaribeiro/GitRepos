@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.android.gitrepos.R
-import br.com.android.gitrepos.data.ResponseStatus
+import br.com.android.gitrepos.core.State
 import br.com.android.gitrepos.data.model.Item
 import br.com.android.gitrepos.databinding.FragmentHomeBinding
 import br.com.android.gitrepos.presentation.adapter.GitRepoAdapter
@@ -57,16 +57,22 @@ class HomeFragment : Fragment() {
             listRepos.addAll(cd.items)
             setReposList(listRepos)
         } else {
-            viewModel.getRepos(page)
+            viewModel.getReposList(page)
         }
     }
 
     private fun setObservable() {
         viewModel.state.observe(viewLifecycleOwner) {
-            when (it.status) {
-                ResponseStatus.SUCCESS -> {
-                    val repos = it.data
-                    repos?.let { g ->
+            when (it) {
+                is State.Loading -> {
+                    loading = true
+                    if (listRepos.size == 0) {
+                        binding.pbGitrepos.visibility = View.VISIBLE
+                    }
+                }
+                is State.Success -> {
+                    val repos = it.result
+                    repos.let { g ->
                         if (listRepos.size == 0) {
                             listRepos.addAll(g.items)
                             setReposList(listRepos)
@@ -85,15 +91,10 @@ class HomeFragment : Fragment() {
                         loading = false
                     }
                 }
-                ResponseStatus.LOADING -> {
-                    loading = true
-                    if (listRepos.size == 0) {
-                        binding.pbGitrepos.visibility = View.VISIBLE
-                    }
-                }
-                ResponseStatus.ERROR -> {
+                is State.Error -> {
                     binding.pbGitrepos.visibility = View.GONE
-                    it.message?.let { it1 -> showMessage(it1) }
+                    showMessage(it.error.message ?: "Error Loading API")
+                    it.error.message?.let { m -> showMessage(m) }
                 }
             }
         }
@@ -124,7 +125,7 @@ class HomeFragment : Fragment() {
                         initialSize = listRepos.size
                         page += 1
                         loading = true
-                        viewModel.getRepos(page)
+                        viewModel.getReposList(page)
                     }
 
                 }
