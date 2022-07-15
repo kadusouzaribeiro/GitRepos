@@ -1,11 +1,11 @@
-package br.com.android.gitrepos.adapter
+package br.com.android.gitrepos.presentation.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import br.com.android.gitrepos.GlideApp
 import br.com.android.gitrepos.R
-import br.com.android.gitrepos.data.remote.dto.Item
+import br.com.android.gitrepos.data.model.Item
 import br.com.android.gitrepos.databinding.ItemRepoBinding
 
 /**

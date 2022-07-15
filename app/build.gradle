@@ -44,6 +44,8 @@ android {
 
 dependencies {
 
+    def koin_version = "3.2.0"
+
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.6.1'
@@ -71,8 +73,8 @@ dependencies {
     //testImplementation 'org.junit.jupiter:junit-jupiter'
     kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
-    // Koin
-    implementation "io.insert-koin:koin-android:3.2.0"
+    //Koin
+    implementation "io.insert-koin:koin-android:$koin_version"
 
     //Gson
     implementation 'com.google.code.gson:gson:2.9.0'

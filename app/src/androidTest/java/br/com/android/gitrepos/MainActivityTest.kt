@@ -8,7 +8,7 @@ import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import br.com.android.gitrepos.adapter.GitRepoAdapter
+import br.com.android.gitrepos.presentation.adapter.GitRepoAdapter
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

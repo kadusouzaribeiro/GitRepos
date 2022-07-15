@@ -1,6 +1,6 @@
-package br.com.android.gitrepos.data.remote
+package br.com.android.gitrepos.data.services
 
-import br.com.android.gitrepos.data.remote.dto.GitData
+import br.com.android.gitrepos.data.model.GitData
 import retrofit2.http.GET
 import retrofit2.http.Query
 

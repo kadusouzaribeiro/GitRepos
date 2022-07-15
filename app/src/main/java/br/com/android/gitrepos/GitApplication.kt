@@ -1,10 +1,8 @@
 package br.com.android.gitrepos
 
 import android.app.Application
-import br.com.android.gitrepos.di.apiModule
-import br.com.android.gitrepos.di.networkModule
-import br.com.android.gitrepos.di.repositoryModule
-import br.com.android.gitrepos.di.viewModelModule
+import br.com.android.gitrepos.data.di.DataModule
+import br.com.android.gitrepos.presentation.di.PresentationModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -20,12 +18,9 @@ class GitApplication: Application() {
         startKoin {
             androidLogger()
             androidContext(this@GitApplication)
-            modules(
-                networkModule,
-                apiModule,
-                repositoryModule,
-                viewModelModule
-            )
         }
+
+        DataModule.load()
+        PresentationModule.load()
     }
 }

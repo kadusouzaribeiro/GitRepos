@@ -1,4 +1,4 @@
-package br.com.android.gitrepos.data.remote.dto
+package br.com.android.gitrepos.data.model
 
 import java.io.Serializable
 

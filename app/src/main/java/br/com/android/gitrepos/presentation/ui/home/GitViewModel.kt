@@ -1,11 +1,11 @@
-package br.com.android.gitrepos.viewmodel
+package br.com.android.gitrepos.presentation.ui.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.android.gitrepos.data.ApiResponse
-import br.com.android.gitrepos.data.remote.GitRepository
-import br.com.android.gitrepos.data.remote.dto.GitData
+import br.com.android.gitrepos.data.model.GitData
+import br.com.android.gitrepos.data.repository.GitRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 
@@ -16,12 +16,12 @@ class GitViewModel(private val repository: GitRepository) : ViewModel() {
 
     val state = MutableLiveData<ApiResponse<GitData?>>()
 
-    fun getRepos(page: Int) {
+    fun getRepos(page: Int = 1) {
         viewModelScope.launch(CoroutineExceptionHandler { _, throwable ->
             state.postValue(ApiResponse.error(null, throwable.message ?: "Error loading API"))
         }) {
             state.postValue(ApiResponse.loading(null))
-            repository.getGitRepos(page).let {
+            repository.getGitRepos().let {
                 state.postValue(ApiResponse.success(it))
             }
         }
